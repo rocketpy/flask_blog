@@ -1,36 +1,102 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask
+from flask_admin import Admin
+from flask_wtf import FlaskForm
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from wtforms import StringField, PasswordField, BooleanField
+from flask_admin.contrib.sqla import ModelView
+from flask_login import login_user, logout_user
+from wtforms.validators import InputRequired, Length
+from flask import render_template, redirect, url_for, request, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_user import UserMixin, login_required, current_user
 from datetime import datetime
 
 
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+admin = Admin(app)
+app.config['SECRET_KEY'] = 'SECRET_KEY'
+app.config['WTF_CSRF_SECRET_KEY'] = "CSRF_SECRET_KEY"
+app.config['CSRF_ENABLED'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 db = SQLAlchemy(app)
+db.init_app(app)
 
-class Blogpost(db.Model):
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    surname = db.Column(db.String(20))
+    sex = db.Column(db.String(6))
+    email = db.Column(db.String(50), unique=True)
+    birthday = db.Column(db.String(10))
+    password = db.Column(db.String(50))
+    posts = db.relationship('UserPost', backref='author')
+
+
+class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
     subtitle = db.Column(db.String(50))
     author = db.Column(db.String(20))
     date_posted = db.Column(db.DateTime)
     content = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class SignUp(FlaskForm):
+    name = StringField('name', validators=[InputRequired(message='An name is required !'),
+                                           Length(min=2, max=20)])
+    surname = StringField('surname', validators=[InputRequired(message='An surname is required !'),
+                                                 Length(min=2, max=20)])
+    email = StringField('email', validators=[InputRequired(message='An email is required !'),
+                                             Length(min=5, max=50)])
+    sex = StringField('sex', validators=[InputRequired(message='Field sex is required !'),
+                                         Length(min=4, max=6, message='Not greater a 6 simbols')])
+    birthday = StringField('birthday', validators=[InputRequired(message='Field birthday is required !'),
+                                                   Length(min=6, max=10, message='Not greater a 6 simbols')])
+    password = PasswordField('password', validators=[InputRequired(message='A password is required !'),
+                                                     Length(min=5, max=50, message='Not greater a 50')])
+
+
+class LoginForm(FlaskForm):
+    email = StringField('email', validators=[InputRequired(message='An email is required !'),
+                                             Length(min=5, max=50)])
+    password = PasswordField('password', validators=[InputRequired(message='A password is required !'),
+                                                     Length(min=5, max=50, message='Not greater a 50')])
+    remember = BooleanField('remember me')
+
+
+class AddPostForm(FlaskForm):
+    name = StringField('name', validators=[InputRequired(message='An name is required !'),
+                                           Length(min=2, max=20, message='It is a wrong length')])
+    email = StringField('email', validators=[InputRequired(message='An email is required !'),
+                                             Length(min=5, max=50, message='It is a wrong length')])
+    message = StringField('message', validators=[InputRequired(message='Text field is required !'),
+                                                 Length(min=5, max=1000, message='It is a wrong length')])
 
 
 @app.route('/')
 def index():
-    posts = Blogpost.query.order_by(Blogpost.date_posted.desc()).all()
+    posts = BlogPost.query.order_by(BlogPost.date_posted.desc()).all()
     return render_template('index.html', posts=posts)
 
 
 @app.route('/about')
-def about():
-    return render_template('about.html')
+@login_required
+def profile():
+    return render_template('about.html', name=current_user.name)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404_error.html', title='404'), 404
 
 
 @app.route('/post/<int:post_id>')
 def post(post_id):
-    post = Blogpost.query.filter_by(id=post_id).one()
+    # posts = UserPost.query.all()
+    post = BlogPost.query.filter_by(id=post_id).one()
     return render_template('post.html', post=post)
 
 
@@ -39,19 +105,89 @@ def add():
     return render_template('add.html')
 
 
+@app.route('/signup', methods=['POST', 'GET'])
+def signup_post():
+    form = SignUp()
+    name = request.form.get('name')  # request.form['name']
+    surname = request.form.get('surname')
+    email = request.form.get('email')
+    sex = request.form.get('sex')
+    birthday = request.form.get('birthday')
+    password = request.form.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        flash('Email address already exists')
+        return render_template('login.html', form=form)
+
+    if form.validate_on_submit():
+        new_user = User(name=name, surname=surname, email=email, sex=sex, birthday=birthday,
+                        password=generate_password_hash(password, method='sha256'))
+
+        db.session.add(new_user)  # adding a new user to db
+        db.session.commit()
+        flash('New user created , login please !')
+        return redirect(url_for('login_post', form=form))
+
+    return render_template('signup.html', form=form)
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login_post():
+    form = LoginForm()
+    email = request.form.get('email')
+    password = request.form.get('password')
+    remember = True if request.form.get('remember') else False
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not check_password_hash(user.password, password):
+        # flash('Please check your login details and try again !')
+        return render_template('login.html', form=form)
+
+    if form.validate_on_submit():
+        login_user(user, remember=remember)
+        flash('Logged in successfully.')
+        return redirect(url_for('add_post', form=form))
+
+    return render_template('login.html', form=form)
+
+
 @app.route('/add', methods=['POST'])
-def addpost():
+def add_post():
     title = request.form['title']
     subtitle = request.form['subtitle']
     author = request.form['author']
     content = request.form['content']
 
-    post = Blogpost(title=title, subtitle=subtitle, author=author, content=content, date_posted=datetime.now())
+    new_post = BlogPost(title=title, subtitle=subtitle, author=author, content=content, date_posted=datetime.now())
 
-    db.session.add(post)
+    db.session.add(new_post)
     db.session.commit()
 
     return redirect(url_for('index'))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return render_template('index.html')
+
+
+login_manager = LoginManager()
+login_manager.login_view = 'login.html'
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(BlogPost, db.session))
 
 
 if __name__ == '__main__':
