@@ -72,8 +72,8 @@ class AddPostForm(FlaskForm):
 
 @app.route('/')
 def index():
-    posts = BlogPost.query.order_by(BlogPost.date_posted.desc()).all()
-    return render_template('index.html', posts=posts)
+    # posts = BlogPost.query.order_by(BlogPost.date_posted.desc()).all()
+    return render_template('index.html')  # posts=posts
 
 
 @app.route('/about')
@@ -88,6 +88,7 @@ def page_not_found(error):
 
 
 @app.route('/post/<int:post_id>')
+@login_required
 def post(post_id):
     # posts = UserPost.query.all()
     post = BlogPost.query.filter_by(id=post_id).one()
@@ -95,6 +96,7 @@ def post(post_id):
 
 
 @app.route('/add')
+@login_required
 def add():
     return render_template('add.html')
 
@@ -149,6 +151,7 @@ def login_post():
 
 
 @app.route('/add', methods=['POST'])
+@login_required
 def add_post():
     title = request.form['title']
     subtitle = request.form['subtitle']
