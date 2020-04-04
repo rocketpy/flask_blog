@@ -27,11 +27,9 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     surname = db.Column(db.String(20))
-    sex = db.Column(db.String(6))
     email = db.Column(db.String(50), unique=True)
-    birthday = db.Column(db.String(10))
     password = db.Column(db.String(50))
-    posts = db.relationship('UserPost', backref='author')
+    posts = db.relationship('BlogPost', backref='author')
 
 
 class BlogPost(db.Model):
@@ -51,10 +49,6 @@ class SignUp(FlaskForm):
                                                  Length(min=2, max=20)])
     email = StringField('email', validators=[InputRequired(message='An email is required !'),
                                              Length(min=5, max=50)])
-    sex = StringField('sex', validators=[InputRequired(message='Field sex is required !'),
-                                         Length(min=4, max=6, message='Not greater a 6 simbols')])
-    birthday = StringField('birthday', validators=[InputRequired(message='Field birthday is required !'),
-                                                   Length(min=6, max=10, message='Not greater a 6 simbols')])
     password = PasswordField('password', validators=[InputRequired(message='A password is required !'),
                                                      Length(min=5, max=50, message='Not greater a 50')])
 
