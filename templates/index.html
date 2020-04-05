@@ -1,12 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <section class="hero is-primary is-fullheight">
-        <div class="hero-body">
-            <div class="container has-text-centered">
-               {% block content %}
-               {% endblock %}
-            </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+        {%  for post in posts %}
+          <div class="{{ url_for('post', post_id=post.id) }}">
+            <a href="post.html">
+              <h2 class="post-title">
+                {{ post.title }}
+              </h2>
+              <h3 class="post-subtitle">
+                {{ post.subtitle }}
+              </h3>
+            </a>
+            <p class="post-meta">Posted by {{ post.post_author }}
+              on {{ post.date_posted.strftime('%B %d, %Y') }}</p>
+            <h3 class="post-content">
+                {{ post.content }}
+            </h3>
+          </div>
+          {% endfor %}
+          <hr>
         </div>
-    </section>
+      </div>
+    </div>
+    <hr>
 {% endblock %}
