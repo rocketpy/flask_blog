@@ -1,64 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
-<head>
+  <head>
+
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Auth</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
-    <link href="{{ url_for('static', filename='bulma.min.css') }}" rel="stylesheet">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<body>
-    <section class="hero is-primary is-fullheight">
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
-                    <div id="navbarMenuHeroA" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a href="{{ url_for('index') }}" class="navbar-item">
-                                Home
-                            </a>
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('show_weather') }}" class="navbar-item">
-                                Weather
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('profile') }}" class="navbar-item">
-                                Profile
-                            </a>
-                            {% endif %}
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('login_post') }}" class="navbar-item">
-                                Login
-                            </a>
-                            <a href="{{ url_for('signup_post') }}" class="navbar-item">
-                                Sign Up
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('add_post') }}" class="navbar-item">
-                                Add post
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('post') }}" class="navbar-item">
-                                All posts
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('logout') }}" class="navbar-item">
-                                Logout
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </nav>
+    <title>Blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="{{ url_for('static', filename='font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='clean-blog.min.css') }}" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        {% if not current_user.is_authenticated %}
+        <a class="navbar-brand" href="{{ url_for('login_post') }}">Login</a>
+        <a class="navbar-brand" href="{{ url_for('signup_post') }}">Sign Up</a>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <a class="navbar-brand" href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('add_post') }}">Add post</a>
+            </li>
+          </ul>
         </div>
+        {% endif %}
+      </div>
+    </nav>
 
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('{{ url_for('static', filename='home-bg.jpg') }}')">
+        <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <h1>Blog for programmers</h1>
+              <span class="subheading">Make your business now</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+        {%  for post in posts %}
+          <div class="{{ url_for('post', post_id=post.id) }}">
+            <a href="post.html">
+              <h2 class="post-title">
+                {{ post.title }}
+              </h2>
+              <h3 class="post-subtitle">
+                {{ post.subtitle }}
+              </h3>
+            </a>
+            <p class="post-meta">Posted by {{ post.post_author }}
+              on {{ post.date_posted.strftime('%B %d, %Y') }}</p>
+            <h3 class="post-content">
+                {{ post.content }}
+            </h3>
+          </div>
+          {% endfor %}
+          <hr>
+
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/?lang=ru">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="www.facebook.com/">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <p class="copyright text-muted">Copyright &copy; 2018</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="{{ url_for('static', filename='clean-blog.min.js') }}"></script>
+
+  </body>
+
+</html>
+
+
+
+    <section class="hero is-primary is-fullheight">
         <div class="hero-body">
             <div class="container has-text-centered">
                {% block content %}
@@ -66,6 +159,3 @@
             </div>
         </div>
     </section>
-</body>
-
-</html>
