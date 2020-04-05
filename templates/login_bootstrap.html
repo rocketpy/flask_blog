@@ -1,28 +1,29 @@
- <div class="container">
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
     <div class="row">
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
         <div class="card card-signin my-5">
           <div class="card-body">
             <h5 class="card-title text-center">Login with Bootstrap</h5>
-            <form method="POST" action="{{ url_for('loginbootstrap') }}">
+            <form method="POST" action="{{ url_for('login_post') }}">
                 {{ form.csrf_token }}
               <div class="form-label-group">
                 <input type="email" minlength=5 maxlength=50 required id="inputEmail" class="form-control" name="email" placeholder="Email" autofocus="">
                 <label for="inputEmail">Email</label>
               </div>
-
               <div class="form-label-group">
                   <input type="password" minlength=5 maxlength=50 required id="inputPassword" class="form-control" placeholder="Password" >
                   <label for="inputPassword">Password</label>
               </div>
-
               <div class="field">
                 <label class="checkbox">
                     <input type="checkbox">
                     Remember me
                 </label>
               </div>
-              <button class="button btn-lg btn-primary btn-block text-uppercase" type="submit">Login</button>
+              <button class="button btn-lg btn-primary btn-block" type="submit">Login</button>
             </form>
 
                 <hr class="my-4">
@@ -34,3 +35,4 @@
       </div>
     </div>
   </div>
+{% endblock %}
