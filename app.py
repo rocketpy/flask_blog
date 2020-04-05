@@ -62,12 +62,14 @@ class LoginForm(FlaskForm):
 
 
 class AddPostForm(FlaskForm):
-    name = StringField('name', validators=[InputRequired(message='An name is required !'),
-                                           Length(min=2, max=20, message='It is a wrong length')])
-    email = StringField('email', validators=[InputRequired(message='An email is required !'),
+    title = StringField('title', validators=[InputRequired(message='An name is required !'),
+                                           Length(min=2, max=50, message='It is a wrong length')])
+    subtitle = StringField('subtitle', validators=[InputRequired(message='An email is required !'),
                                              Length(min=5, max=50, message='It is a wrong length')])
-    message = StringField('message', validators=[InputRequired(message='Text field is required !'),
-                                                 Length(min=5, max=1000, message='It is a wrong length')])
+    author = StringField('subtitle', validators=[InputRequired(message='An email is required !'),
+                                             Length(min=5, max=20, message='It is a wrong length')])
+    content = StringField('content', validators=[InputRequired(message='Text field is required !'),
+                                                 Length(min=5, max=10000, message='It is a wrong length')])
 
 
 @app.route('/')
@@ -95,10 +97,12 @@ def post(post_id):
     return render_template('post.html', post=post)
 
 
+"""
 @app.route('/add')
 @login_required
 def add():
     return render_template('add.html')
+"""
 
 
 @app.route('/signup', methods=['POST', 'GET'])
