@@ -111,8 +111,6 @@ def signup_post():
     name = request.form.get('name')  # request.form['name']
     surname = request.form.get('surname')
     email = request.form.get('email')
-    sex = request.form.get('sex')
-    birthday = request.form.get('birthday')
     password = request.form.get('password')
 
     user = User.query.filter_by(email=email).first()
