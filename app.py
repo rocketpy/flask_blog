@@ -147,7 +147,7 @@ def login_post():
     if form.validate_on_submit():
         login_user(user, remember=remember)
         # flash('Logged in successfully.')
-        return redirect(url_for('profile'))
+        return redirect(url_for('index'))
 
     return render_template('login_bootstrap.html', form=form)
 
