@@ -116,7 +116,7 @@ def signup_post():
     user = User.query.filter_by(email=email).first()
 
     if user:
-        flash('Email address already exists')
+        # flash('Email address already exists')
         return render_template('login.html', form=form)
 
     if form.validate_on_submit():
@@ -125,8 +125,8 @@ def signup_post():
 
         db.session.add(new_user)  # adding a new user to db
         db.session.commit()
-        flash('New user created , login please !')
-        return redirect(url_for('login_post', form=form))
+        # flash('New user created , login please !')
+        return redirect(url_for('login_bootstrap', form=form))
 
     return render_template('signup.html', form=form)
 
@@ -142,14 +142,14 @@ def login_post():
 
     if not user or not check_password_hash(user.password, password):
         # flash('Please check your login details and try again !')
-        return render_template('login.html', form=form)
+        return render_template('login_bootstrap.html', form=form)
 
     if form.validate_on_submit():
         login_user(user, remember=remember)
-        flash('Logged in successfully.')
-        return redirect(url_for('add_post', form=form))
+        # flash('Logged in successfully.')
+        return redirect(url_for('profile'))
 
-    return render_template('login.html', form=form)
+    return render_template('login_bootstrap.html', form=form)
 
 
 @app.route('/add', methods=['POST'])
