@@ -9,23 +9,33 @@
             <h5 class="card-title text-center">Login with Bootstrap</h5>
             <form method="POST" action="{{ url_for('loginbootstrap') }}">
                 {{ form.csrf_token }}
-              <div class="form-label-group">
-                <input type="email" minlength=5 maxlength=50 required id="inputEmail" class="form-control" name="email" placeholder="Email" autofocus="">
-                <label for="inputEmail">Email</label>
-              </div>
+             <div class="form-label-group">
+                <div class="form-control">
+                    <input class="input is-large" type="text" minlength=2 maxlength=20 required id="name" name="name" placeholder="Name" autofocus="">
+                  <label for="inputName">Name</label>
+                </div>
+            </div>
 
-              <div class="form-label-group">
-                  <input type="password" minlength=5 maxlength=50 required id="inputPassword" class="form-control" placeholder="Password" >
+            <div class="form-label-group">
+                <div class="form-control">
+                    <input class="input is-large" type="text" minlength=2 maxlength=20 required id="surname" name="surname" placeholder="Surname" autofocus="">
+                  <label for="inputSurname">Surname</label>
+                </div>
+            </div>
+
+            <div class="form-label-group">
+                <div class="form-control">
+                    <input class="input is-large" type="email" minlength=5 maxlength=50 required id="email" name="email" placeholder="Email" autofocus="">
+                  <label for="inputEmail">Email</label>
+                </div>
+            </div>
+            <div class="form-label-group">
+                <div class="control">
+                    <input class="input is-large" type="password" minlength=5 maxlength=50 required id="password" name="password" placeholder="Password">
                   <label for="inputPassword">Password</label>
-              </div>
-
-              <div class="field">
-                <label class="checkbox">
-                    <input type="checkbox">
-                    Remember me
-                </label>
-              </div>
-              <button class="button btn-lg btn-primary btn-block text-uppercase" type="submit">Login</button>
+                </div>
+            </div>
+              <button class="button btn-lg btn-primary btn-block" type="submit">Sign Up</button>
             </form>
 
                 <hr class="my-4">
