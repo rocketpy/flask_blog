@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
 
-          <form name="addForm" id="addForm" method="POST" action="{{ url_for('addpost') }}" novalidate>
+          <form name="addForm" id="addForm" method="POST" action="{{ url_for('add_post') }}" >
             <div class="control-group">
               <div class="form-group floating-label-form-group controls">
                 <label>Title</label>
@@ -38,7 +38,7 @@
             <br>
             <div id="success"></div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary" id="sendMessageButton">Send</button>
+              <button type="submit" class="btn btn-primary" id="sendMessageButton">Add post</button>
             </div>
           </form>
         </div>
