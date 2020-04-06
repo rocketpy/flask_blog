@@ -81,7 +81,7 @@ def index():
 @app.route('/about')
 @login_required
 def profile():
-    return render_template('about.html', name=current_user.name)
+    return render_template('about.html')  # name=current_user.name
 
 
 @app.errorhandler(404)
@@ -117,16 +117,15 @@ def signup_post():
 
     if user:
         # flash('Email address already exists')
-        return render_template('login.html', form=form)
+        return render_template('login_bootstrap.html', form=form)
 
     if form.validate_on_submit():
-        new_user = User(name=name, surname=surname, email=email, sex=sex, birthday=birthday,
-                        password=generate_password_hash(password, method='sha256'))
+        new_user = User(name=name, surname=surname, email=email, password=generate_password_hash(password, method='sha256'))
 
         db.session.add(new_user)  # adding a new user to db
         db.session.commit()
         # flash('New user created , login please !')
-        return redirect(url_for('login_bootstrap', form=form))
+        return redirect(url_for('login_post', form=form))
 
     return render_template('signup.html', form=form)
 
@@ -147,9 +146,9 @@ def login_post():
     if form.validate_on_submit():
         login_user(user, remember=remember)
         # flash('Logged in successfully.')
-        return redirect(url_for('index'))
+        return redirect(url_for('profile'))
 
-    return render_template('login_bootstrap.html', form=form)
+    return render_template('login_bootstrap', form=form)
 
 
 @app.route('/add', methods=['POST'])
