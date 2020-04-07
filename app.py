@@ -92,9 +92,9 @@ def page_not_found(error):
 @app.route('/post/<int:post_id>')
 @login_required
 def post(post_id):
-    # posts = UserPost.query.all()
-    post = BlogPost.query.filter_by(id=post_id).one()
-    return render_template('post.html', post=post)
+    # posts = BlogPost.query.all()
+    posts = BlogPost.query.filter_by(id=post_id).one()
+    return render_template('post.html', post=posts)
 
 
 """
