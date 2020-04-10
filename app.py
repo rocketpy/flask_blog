@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     surname = db.Column(db.String(20))
-    email = db.Column(db.String(50), unique=True)
+    email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(50))
     posts = db.relationship('BlogPost', backref='author')
 
@@ -48,14 +48,14 @@ class SignUp(FlaskForm):
     surname = StringField('surname', validators=[InputRequired(message='An surname is required !'),
                                                  Length(min=2, max=20)])
     email = StringField('email', validators=[InputRequired(message='An email is required !'),
-                                             Length(min=5, max=50)])
+                                             Length(min=5, max=255)])
     password = PasswordField('password', validators=[InputRequired(message='A password is required !'),
                                                      Length(min=5, max=50, message='Not greater a 50')])
 
 
 class LoginForm(FlaskForm):
     email = StringField('email', validators=[InputRequired(message='An email is required !'),
-                                             Length(min=5, max=50)])
+                                             Length(min=5, max=255)])
     password = PasswordField('password', validators=[InputRequired(message='A password is required !'),
                                                      Length(min=5, max=50, message='Not greater a 50')])
     remember = BooleanField('remember me')
